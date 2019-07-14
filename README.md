@@ -17,3 +17,5 @@ URLのリストを標準入力として受け取り、そのWebページに含�
 ```
 cat urllist.txt | python wordcloud_of_webpages.py
 ```
+出力例
+![wordcloud](https://user-images.githubusercontent.com/29521139/61180586-a1e2c300-a653-11e9-93e4-72bea0a9c990.png)
