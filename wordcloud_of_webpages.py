@@ -15,7 +15,7 @@ def get_description_of_webpage(encoding="UTF-8"):
         print(url.strip())
         try:
             #res = requests.get("http://"+url.strip())
-            res = requests.get(url.strip())
+            res = requests.get(url.strip(), timeout=3.0)
         except:
             print("GET request failed")
             continue
