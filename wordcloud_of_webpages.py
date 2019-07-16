@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import requests
 from bs4 import BeautifulSoup
-from urllib.parse import urlparse
 import sys
 import MeCab
 from wordcloud import WordCloud
@@ -18,6 +17,7 @@ def get_description_of_webpage(encoding="UTF-8"):
             #res = requests.get("http://"+url.strip())
             res = requests.get(url.strip())
         except:
+            print("GET request failed")
             continue
         res.encoding = encoding
         soup = BeautifulSoup(res.text, 'html.parser')
@@ -44,8 +44,9 @@ def create_wordcloud():
     # 環境に合わせてフォントのパスを指定する。
     #fpath = "/System/Library/Fonts/HelveticaNeue-UltraLight.otf"
     #fpath = "/Library/Fonts/ヒラギノ角ゴ Pro W3.otf"
-    fpath = "/usr/share/fonts/truetype/takao-gothic/TakaoPGothic.ttf"
-
+    #fpath = "/usr/share/fonts/truetype/takao-gothic/TakaoPGothic.ttf"
+    fpath = "/Users/wataru-masuda/.font/NotoSansCJKjp-Regular.otf"
+    
     #ストップワードの設定
     stop_words = [ u'てる', u'いる', u'なる', u'れる', u'する', u'ある', u'こと', u'これ', u'さん', u'して',
                    u'くれる', u'やる', u'くださる', u'そう', u'せる', u'した',  u'思う',
@@ -57,7 +58,7 @@ def create_wordcloud():
                           stopwords=set(stop_words)).generate(" ".join(word_list))
     #                      ).generate(" ".join(word_list))
 
-    plt.figure(figsize=(15,12))
+    plt.figure(figsize=(10, 8))
     plt.imshow(wordcloud)
     plt.axis("off")
     plt.savefig("wordcloud.png")
@@ -69,12 +70,11 @@ def main():
         #print(description)
         parse_description(description)
 
-        #print(word_cnt)
-    create_wordcloud()
-
     with open("word_cnt_map.txt","w") as wf:
         for word, cnt in word_cnt.items():
             wf.write("{}\t{}\n".format(word, cnt))
+
+    create_wordcloud()
         
 
 if __name__ == "__main__":
