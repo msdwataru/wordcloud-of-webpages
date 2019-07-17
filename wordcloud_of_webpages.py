@@ -6,6 +6,11 @@ import MeCab
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 from collections import Counter
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-p", "--show_plot", action="store_false")
+args = parser.parse_args()
 
 word_list = []
 word_cnt = Counter()
@@ -23,10 +28,10 @@ def get_title_and_description_of_webpage(encoding="UTF-8"):
         soup = BeautifulSoup(res.text, 'html.parser')
         
         for meta_tag in soup.find_all('meta', attrs={'name': 'description'}):
-            yield soup.title.string + "\n" + meta_tag.get('content')
+            yield str(soup.title.string) + "\n" + meta_tag.get('content')
 
 def parse_text(text):
-    m = MeCab.Tagger("-Ochasen")
+    m = MeCab.Tagger("-d /usr/local/lib/mecab/dic/mecab-ipadic-neologd")
     for row in m.parse(text).split("\n"):
         word = row.split()[0]
         if word == "EOS":
@@ -61,7 +66,8 @@ def create_wordcloud():
     plt.imshow(wordcloud)
     plt.axis("off")
     plt.savefig("wordcloud.png")
-    plt.show()
+    if args.show_plot:
+        plt.show()
 
 
 def main():
