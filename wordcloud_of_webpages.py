@@ -10,24 +10,24 @@ from collections import Counter
 word_list = []
 word_cnt = Counter()
 
-def get_description_of_webpage(encoding="UTF-8"):
+def get_title_and_description_of_webpage(encoding="UTF-8"):
     for url in sys.stdin:
         print(url.strip())
         try:
             #res = requests.get("http://"+url.strip())
             res = requests.get(url.strip(), timeout=3.0)
-        except:
+        except Exception:
             print("GET request failed")
             continue
         res.encoding = encoding
         soup = BeautifulSoup(res.text, 'html.parser')
         
         for meta_tag in soup.find_all('meta', attrs={'name': 'description'}):
-            yield meta_tag.get('content')
+            yield soup.title.string + "\n" + meta_tag.get('content')
 
-def parse_description(description):
+def parse_text(text):
     m = MeCab.Tagger("-Ochasen")
-    for row in m.parse(description).split("\n"):
+    for row in m.parse(text).split("\n"):
         word = row.split()[0]
         if word == "EOS":
             break
@@ -35,7 +35,6 @@ def parse_description(description):
         if "名詞-サ変接続" in pos or "数" in pos:
             continue
         if "名詞" in pos or "形容詞" in pos or "動詞" in pos:
-            #print(row)    
             word_list.append(word)
             word_cnt.update([word])
 
@@ -66,9 +65,9 @@ def create_wordcloud():
 
 
 def main():
-    for description in get_description_of_webpage():
-        #print(description)
-        parse_description(description)
+    for text in get_title_and_description_of_webpage():
+        print(text)
+        parse_text(text)
 
     with open("word_cnt_map.txt","w") as wf:
         for word, cnt in word_cnt.items():
